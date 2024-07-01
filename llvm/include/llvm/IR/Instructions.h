@@ -30,6 +30,7 @@
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/OperandTraits.h"
+#include "llvm/IR/TailCallKind.h"
 #include "llvm/IR/Use.h"
 #include "llvm/IR/User.h"
 #include "llvm/Support/AtomicOrdering.h"
@@ -1481,39 +1482,30 @@ public:
   static CallInst *Create(CallInst *CI, ArrayRef<OperandBundleDef> Bundles,
                           InsertPosition InsertPt = nullptr);
 
-  // Note that 'musttail' implies 'tail'.
-  enum TailCallKind : unsigned {
-    TCK_None = 0,
-    TCK_Tail = 1,
-    TCK_MustTail = 2,
-    TCK_NoTail = 3,
-    TCK_LAST = TCK_NoTail
-  };
-
-  using TailCallKindField = Bitfield::Element<TailCallKind, 0, 2, TCK_LAST>;
+  using TailCallKindField = Bitfield::Element<TailCallKind::ID, 0, 2, TailCallKind::Last>;
   static_assert(
       Bitfield::areContiguous<TailCallKindField, CallBase::CallingConvField>(),
       "Bitfields must be contiguous");
 
-  TailCallKind getTailCallKind() const {
+  TailCallKind::ID getTailCallKind() const {
     return getSubclassData<TailCallKindField>();
   }
 
   bool isTailCall() const {
-    TailCallKind Kind = getTailCallKind();
-    return Kind == TCK_Tail || Kind == TCK_MustTail;
+    TailCallKind::ID Kind = getTailCallKind();
+    return Kind == TailCallKind::Tail || Kind == TailCallKind::MustTail;
   }
 
-  bool isMustTailCall() const { return getTailCallKind() == TCK_MustTail; }
+  bool isMustTailCall() const { return getTailCallKind() == TailCallKind::MustTail; }
 
-  bool isNoTailCall() const { return getTailCallKind() == TCK_NoTail; }
+  bool isNoTailCall() const { return getTailCallKind() == TailCallKind::NoTail; }
 
-  void setTailCallKind(TailCallKind TCK) {
+  void setTailCallKind(TailCallKind::ID TCK) {
     setSubclassData<TailCallKindField>(TCK);
   }
 
   void setTailCall(bool IsTc = true) {
-    setTailCallKind(IsTc ? TCK_Tail : TCK_None);
+    setTailCallKind(IsTc ? TailCallKind::Tail : TailCallKind::None);
   }
 
   /// Return true if the call can return twice

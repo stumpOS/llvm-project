@@ -280,6 +280,35 @@ def CConv : DialectAttr<
 }
 
 //===----------------------------------------------------------------------===//
+// TailCallKind
+//===----------------------------------------------------------------------===//
+
+def TailCallKindNone : LLVM_EnumAttrCase<"None", "none", "None", 0>;
+def TailCallKindNoTailCall : LLVM_EnumAttrCase<"NoTail", "notail", "NoTail", 1>;
+def TailCallKindMustTail : LLVM_EnumAttrCase<"MustTail", "musttail", "MustTail", 2>;
+def TailCallKindTail : LLVM_EnumAttrCase<"Tail", "tail", "Tail", 3>;
+
+def TailCallKindEnum : LLVM_CEnumAttr<
+    "TailCallKind",
+    "::llvm::TailCallKind",
+    "Tail Call Kind",
+    [TailCallKindNone, TailCallKindNoTailCall,
+    TailCallKindMustTail, TailCallKindTail]> {
+  let cppNamespace = "::mlir::LLVM::cconv";
+}
+
+def TailCallKind : DialectAttr<
+    LLVM_Dialect,
+    CPred<"::llvm::isa<::mlir::LLVM::TailCallKindAttr>($_self)">,
+    "LLVM Calling Convention specification"> {
+  let storageType = "::mlir::LLVM::TailCallKindAttr";
+  let returnType = "::mlir::LLVM::tailcallkind::TailCallKind";
+  let convertFromStorage = "$_self.getTailCallKind()";
+  let constBuilderCall =
+          "::mlir::LLVM::TailCallKind::get($_builder.getContext(), $0)";
+}
+
+//===----------------------------------------------------------------------===//
 // DIEmissionKind
 //===----------------------------------------------------------------------===//
 

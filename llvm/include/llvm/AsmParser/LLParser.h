@@ -652,7 +652,7 @@ namespace llvm {
     int parsePHI(Instruction *&Inst, PerFunctionState &PFS);
     bool parseLandingPad(Instruction *&Inst, PerFunctionState &PFS);
     bool parseCall(Instruction *&Inst, PerFunctionState &PFS,
-                   CallInst::TailCallKind TCK);
+                   TailCallKind::ID TCK);
     int parseAlloc(Instruction *&Inst, PerFunctionState &PFS);
     int parseLoad(Instruction *&Inst, PerFunctionState &PFS);
     int parseStore(Instruction *&Inst, PerFunctionState &PFS);
