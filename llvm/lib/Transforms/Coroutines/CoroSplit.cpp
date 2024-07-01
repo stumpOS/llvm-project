@@ -1092,7 +1092,7 @@ void CoroCloner::create() {
     if (TTI.supportsTailCallFor(ResumeCall)) {
       // FIXME: Could we support symmetric transfer effectively without
       // musttail?
-      ResumeCall->setTailCallKind(CallInst::TCK_MustTail);
+      ResumeCall->setTailCallKind(TailCallKind::MustTail);
     }
 
     // Put a 'ret void' after the call, and split any remaining instructions to
@@ -1667,7 +1667,7 @@ CallInst *coro::createMustTailCall(DebugLoc Loc, Function *MustTailCallFn,
   auto *TailCall = Builder.CreateCall(FnTy, MustTailCallFn, CallArgs);
   // Skip targets which don't support tail call.
   if (TTI.supportsTailCallFor(TailCall)) {
-    TailCall->setTailCallKind(CallInst::TCK_MustTail);
+    TailCall->setTailCallKind(TailCallKind::MustTail);
   }
   TailCall->setDebugLoc(Loc);
   TailCall->setCallingConv(MustTailCallFn->getCallingConv());

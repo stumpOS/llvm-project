@@ -394,7 +394,7 @@ void CodeGenFunction::EmitCallAndReturnForThunk(llvm::FunctionCallee Callee,
   if (Thunk && !Thunk->Return.isEmpty())
     RV = PerformReturnAdjustment(*this, ResultType, RV, *Thunk);
   else if (llvm::CallInst* Call = dyn_cast<llvm::CallInst>(CallOrInvoke))
-    Call->setTailCallKind(llvm::CallInst::TCK_Tail);
+    Call->setTailCallKind(llvm::TailCallKind::Tail);
 
   // Emit return.
   if (!ResultType->isVoidType() && Slot.isNull())
@@ -436,7 +436,7 @@ void CodeGenFunction::EmitMustTailThunk(GlobalDecl GD,
   // Emit the musttail call manually.  Even if the prologue pushed cleanups, we
   // don't actually want to run them.
   llvm::CallInst *Call = Builder.CreateCall(Callee, Args);
-  Call->setTailCallKind(llvm::CallInst::TCK_MustTail);
+  Call->setTailCallKind(llvm::TailCallKind::Tail);
 
   // Apply the standard set of call attributes.
   unsigned CallingConv;

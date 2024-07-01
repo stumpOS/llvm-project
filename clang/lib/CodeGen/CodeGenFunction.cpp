@@ -2832,7 +2832,7 @@ static void CreateMultiVersionResolverReturn(CodeGenModule &CGM,
       llvm::make_pointer_range(Resolver->args()));
 
   llvm::CallInst *Result = Builder.CreateCall(FuncToReturn, Args);
-  Result->setTailCallKind(llvm::CallInst::TCK_MustTail);
+  Result->setTailCallKind(llvm::TailCallKind::MustTail);
 
   if (Resolver->getReturnType()->isVoidTy())
     Builder.CreateRetVoid();

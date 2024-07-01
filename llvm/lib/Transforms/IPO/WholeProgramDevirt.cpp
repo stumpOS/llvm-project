@@ -1438,7 +1438,7 @@ void DevirtModule::tryICallBranchFunnel(
       Intrinsic::getDeclaration(&M, llvm::Intrinsic::icall_branch_funnel, {});
 
   auto *CI = CallInst::Create(Intr, JTArgs, "", BB);
-  CI->setTailCallKind(CallInst::TCK_MustTail);
+  CI->setTailCallKind(TailCallKind::MustTail);
   ReturnInst::Create(M.getContext(), nullptr, BB);
 
   bool IsExported = false;

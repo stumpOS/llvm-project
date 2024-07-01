@@ -2168,7 +2168,7 @@ static llvm::Function *getARCIntrinsic(llvm::Intrinsic::ID IntID,
 static llvm::Value *emitARCValueOperation(
     CodeGenFunction &CGF, llvm::Value *value, llvm::Type *returnType,
     llvm::Function *&fn, llvm::Intrinsic::ID IntID,
-    llvm::CallInst::TailCallKind tailKind = llvm::CallInst::TCK_None) {
+    llvm::TailCallKind::ID tailKind = llvm::TailCallKind::None) {
   if (isa<llvm::ConstantPointerNull>(value))
     return value;
 
@@ -2403,8 +2403,8 @@ static llvm::Value *emitOptimizedARCReturnCall(llvm::Value *value,
 
   bool isNoTail =
       CGF.CGM.getTargetCodeGenInfo().markARCOptimizedReturnCallsAsNoTail();
-  llvm::CallInst::TailCallKind tailKind =
-      isNoTail ? llvm::CallInst::TCK_NoTail : llvm::CallInst::TCK_None;
+  llvm::TailCallKind::ID tailKind =
+      isNoTail ? llvm::TailCallKind::NoTail : llvm::TailCallKind::None;
   return emitARCValueOperation(CGF, value, nullptr, EP, IID, tailKind);
 }
 
@@ -2544,7 +2544,7 @@ CodeGenFunction::EmitARCAutoreleaseReturnValue(llvm::Value *value) {
   return emitARCValueOperation(*this, value, nullptr,
                             CGM.getObjCEntrypoints().objc_autoreleaseReturnValue,
                                llvm::Intrinsic::objc_autoreleaseReturnValue,
-                               llvm::CallInst::TCK_Tail);
+                               llvm::TailCallKind::Tail);
 }
 
 /// Do a fused retain/autorelease of the given object.
@@ -2554,7 +2554,7 @@ CodeGenFunction::EmitARCRetainAutoreleaseReturnValue(llvm::Value *value) {
   return emitARCValueOperation(*this, value, nullptr,
                      CGM.getObjCEntrypoints().objc_retainAutoreleaseReturnValue,
                              llvm::Intrinsic::objc_retainAutoreleaseReturnValue,
-                               llvm::CallInst::TCK_Tail);
+                               llvm::TailCallKind::Tail);
 }
 
 /// Do a fused retain/autorelease of the given object.

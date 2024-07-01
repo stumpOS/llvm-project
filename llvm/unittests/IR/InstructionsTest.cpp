@@ -727,14 +727,14 @@ TEST(InstructionsTest, CloneCall) {
       CallInst::Create(FnTy, Callee, Args, "result"));
 
   // Test cloning the tail call kind.
-  CallInst::TailCallKind Kinds[] = {CallInst::TCK_None, CallInst::TCK_Tail,
-                                    CallInst::TCK_MustTail};
-  for (CallInst::TailCallKind TCK : Kinds) {
+  TailCallKind::ID Kinds[] = {TailCallKind::None, TailCallKind::Tail,
+                                    TailCallKind::MustTail};
+  for (TailCallKind::ID TCK : Kinds) {
     Call->setTailCallKind(TCK);
     std::unique_ptr<CallInst> Clone(cast<CallInst>(Call->clone()));
     EXPECT_EQ(Call->getTailCallKind(), Clone->getTailCallKind());
   }
-  Call->setTailCallKind(CallInst::TCK_None);
+  Call->setTailCallKind(TailCallKind::None);
 
   // Test cloning an attribute.
   {

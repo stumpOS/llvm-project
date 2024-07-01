@@ -3005,7 +3005,7 @@ LLVMTailCallKind LLVMGetTailCallKind(LLVMValueRef Call) {
 }
 
 void LLVMSetTailCallKind(LLVMValueRef Call, LLVMTailCallKind kind) {
-  unwrap<CallInst>(Call)->setTailCallKind((CallInst::TailCallKind)kind);
+  unwrap<CallInst>(Call)->setTailCallKind((TailCallKind::ID)kind);
 }
 
 /*--.. Operations on invoke instructions (only) ............................--*/

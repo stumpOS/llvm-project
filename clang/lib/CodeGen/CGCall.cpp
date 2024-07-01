@@ -5750,9 +5750,9 @@ RValue CodeGenFunction::EmitCall(const CGFunctionInfo &CallInfo,
   // Set tail call kind if necessary.
   if (llvm::CallInst *Call = dyn_cast<llvm::CallInst>(CI)) {
     if (TargetDecl && TargetDecl->hasAttr<NotTailCalledAttr>())
-      Call->setTailCallKind(llvm::CallInst::TCK_NoTail);
+      Call->setTailCallKind(llvm::TailCallKind::NoTail);
     else if (IsMustTail)
-      Call->setTailCallKind(llvm::CallInst::TCK_MustTail);
+      Call->setTailCallKind(llvm::TailCallKind::MustTail);
   }
 
   // Add metadata for calls to MSAllocator functions

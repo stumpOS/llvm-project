@@ -95,13 +95,13 @@ static bool lowerLoadRelative(Function &F) {
 
 // ObjCARC has knowledge about whether an obj-c runtime function needs to be
 // always tail-called or never tail-called.
-static CallInst::TailCallKind getOverridingTailCallKind(const Function &F) {
+static TailCallKind::ID getOverridingTailCallKind(const Function &F) {
   objcarc::ARCInstKind Kind = objcarc::GetFunctionClass(&F);
   if (objcarc::IsAlwaysTail(Kind))
-    return CallInst::TCK_Tail;
+    return TailCallKind::Tail;
   else if (objcarc::IsNeverTail(Kind))
-    return CallInst::TCK_NoTail;
-  return CallInst::TCK_None;
+    return TailCallKind::NoTail;
+  return TailCallKind::None;
 }
 
 static bool lowerObjCCall(Function &F, const char *NewFn,
@@ -125,7 +125,7 @@ static bool lowerObjCCall(Function &F, const char *NewFn,
     }
   }
 
-  CallInst::TailCallKind OverridingTCK = getOverridingTailCallKind(F);
+  TailCallKind::ID OverridingTCK = getOverridingTailCallKind(F);
 
   for (Use &U : llvm::make_early_inc_range(F.uses())) {
     auto *CB = cast<CallBase>(U.getUser());
@@ -158,7 +158,7 @@ static bool lowerObjCCall(Function &F, const char *NewFn,
     // std::max respects both requirements of notail and tail here:
     // * notail on either the call or from ObjCARC becomes notail
     // * tail on either side is stronger than none, but not notail
-    CallInst::TailCallKind TCK = CI->getTailCallKind();
+    TailCallKind::ID TCK = CI->getTailCallKind();
     NewCI->setTailCallKind(std::max(TCK, OverridingTCK));
 
     // Transfer the 'returned' attribute from the intrinsic to the call site.

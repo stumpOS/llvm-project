@@ -655,7 +655,7 @@ Function *AArch64Arm64ECCallLowering::buildGuestExitThunk(Function *F) {
   for (Argument &Arg : GuestExit->args())
     Args.push_back(&Arg);
   CallInst *Call = B.CreateCall(Arm64Ty, GuardRetVal, Args);
-  Call->setTailCallKind(llvm::CallInst::TCK_MustTail);
+  Call->setTailCallKind(TailCallKind::MustTail);
 
   if (Call->getType()->isVoidTy())
     B.CreateRetVoid();

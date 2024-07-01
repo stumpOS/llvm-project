@@ -6702,13 +6702,13 @@ Error BitcodeReader::parseFunctionBody(Function *F) {
       InstructionList.push_back(I);
       cast<CallInst>(I)->setCallingConv(
           static_cast<CallingConv::ID>((0x7ff & CCInfo) >> bitc::CALL_CCONV));
-      CallInst::TailCallKind TCK = CallInst::TCK_None;
+      TailCallKind::ID TCK = TailCallKind::None;
       if (CCInfo & (1 << bitc::CALL_TAIL))
-        TCK = CallInst::TCK_Tail;
+        TCK = TailCallKind::Tail;
       if (CCInfo & (1 << bitc::CALL_MUSTTAIL))
-        TCK = CallInst::TCK_MustTail;
+        TCK = TailCallKind::MustTail;
       if (CCInfo & (1 << bitc::CALL_NOTAIL))
-        TCK = CallInst::TCK_NoTail;
+        TCK = TailCallKind::NoTail;
       cast<CallInst>(I)->setTailCallKind(TCK);
       cast<CallInst>(I)->setAttributes(PAL);
       if (isa<DbgInfoIntrinsic>(I))
