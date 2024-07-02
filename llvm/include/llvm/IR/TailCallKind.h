@@ -38,4 +38,4 @@ enum {
 
 } // end namespace llvm
 
-#endif // LLVM_IR_CALLINGCONV_H
+#endif // LLVM_IR_TAILCALLKIND_H
