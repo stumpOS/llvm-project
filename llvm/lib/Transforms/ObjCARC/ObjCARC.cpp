@@ -100,7 +100,7 @@ BundledRetainClaimRVs::~BundledRetainClaimRVs() {
       // calls. Mark them as notail so that the backend knows these calls
       // can't be tail calls.
       if (auto *CI = dyn_cast<CallInst>(CB))
-        CI->setTailCallKind(CallInst::TCK_NoTail);
+        CI->setTailCallKind(TailCallKind::NoTail);
     }
 
     EraseInstruction(P.first);

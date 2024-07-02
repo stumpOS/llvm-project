@@ -811,12 +811,12 @@ bool ExpandVariadics::expandCall(Module &M, IRBuilder<> &Builder, CallBase *CB,
 
     NewCB = CallInst::Create(NFTy, Dst, Args, OpBundles, "", CI);
 
-    CallInst::TailCallKind TCK = CI->getTailCallKind();
-    assert(TCK != CallInst::TCK_MustTail);
+    TailCallKind::ID TCK = CI->getTailCallKind();
+    assert(TCK != TailCallKind::MustTail);
 
     // Can't tail call a function that is being passed a pointer to an alloca
-    if (TCK == CallInst::TCK_Tail)
-      TCK = CallInst::TCK_None;
+    if (TCK == TailCallKind::Tail)
+      TCK = TailCallKind::None;
     CI->setTailCallKind(TCK);
 
   } else {

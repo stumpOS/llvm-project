@@ -2541,13 +2541,13 @@ llvm::InlineResult llvm::InlineFunction(CallBase &CB, InlineFunctionInfo &IFI,
 
   bool InlinedMustTailCalls = false, InlinedDeoptimizeCalls = false;
   if (InlinedFunctionInfo.ContainsCalls) {
-    CallInst::TailCallKind CallSiteTailKind = CallInst::TCK_None;
+    TailCallKind::ID CallSiteTailKind = TailCallKind::None;
     if (CallInst *CI = dyn_cast<CallInst>(&CB))
       CallSiteTailKind = CI->getTailCallKind();
 
     // For inlining purposes, the "notail" marker is the same as no marker.
-    if (CallSiteTailKind == CallInst::TCK_NoTail)
-      CallSiteTailKind = CallInst::TCK_None;
+    if (CallSiteTailKind == TailCallKind::NoTail)
+      CallSiteTailKind = TailCallKind::None;
 
     for (Function::iterator BB = FirstNewBlock, E = Caller->end(); BB != E;
          ++BB) {
@@ -2607,8 +2607,8 @@ llvm::InlineResult llvm::InlineFunction(CallBase &CB, InlineFunctionInfo &IFI,
         //    f ->          g ->     tail f  ==>  f ->          f
         //
         // Inlined notail calls should remain notail calls.
-        CallInst::TailCallKind ChildTCK = CI->getTailCallKind();
-        if (ChildTCK != CallInst::TCK_NoTail)
+        TailCallKind::ID ChildTCK = CI->getTailCallKind();
+        if (ChildTCK != TailCallKind::NoTail)
           ChildTCK = std::min(CallSiteTailKind, ChildTCK);
         CI->setTailCallKind(ChildTCK);
         InlinedMustTailCalls |= CI->isMustTailCall();

@@ -7012,13 +7012,13 @@ int LLParser::parseInstruction(Instruction *&Inst, BasicBlock *BB,
     return parseFreeze(Inst, PFS);
   // Call.
   case lltok::kw_call:
-    return parseCall(Inst, PFS, CallInst::TCK_None);
+    return parseCall(Inst, PFS, TailCallKind::None);
   case lltok::kw_tail:
-    return parseCall(Inst, PFS, CallInst::TCK_Tail);
+    return parseCall(Inst, PFS, TailCallKind::Tail);
   case lltok::kw_musttail:
-    return parseCall(Inst, PFS, CallInst::TCK_MustTail);
+    return parseCall(Inst, PFS, TailCallKind::MustTail);
   case lltok::kw_notail:
-    return parseCall(Inst, PFS, CallInst::TCK_NoTail);
+    return parseCall(Inst, PFS, TailCallKind::NoTail);
   // Memory.
   case lltok::kw_alloca:
     return parseAlloc(Inst, PFS);
@@ -7964,7 +7964,7 @@ bool LLParser::parseFreeze(Instruction *&Inst, PerFunctionState &PFS) {
 ///   ::= 'notail' 'call'  OptionalFastMathFlags OptionalCallingConv
 ///           OptionalAttrs Type Value ParameterList OptionalAttrs
 bool LLParser::parseCall(Instruction *&Inst, PerFunctionState &PFS,
-                         CallInst::TailCallKind TCK) {
+                         TailCallKind::ID TCK) {
   AttrBuilder RetAttrs(M->getContext()), FnAttrs(M->getContext());
   std::vector<unsigned> FwdRefAttrGrps;
   LocTy BuiltinLoc;
@@ -7977,7 +7977,7 @@ bool LLParser::parseCall(Instruction *&Inst, PerFunctionState &PFS,
   SmallVector<OperandBundleDef, 2> BundleList;
   LocTy CallLoc = Lex.getLoc();
 
-  if (TCK != CallInst::TCK_None &&
+  if (TCK != TailCallKind::None &&
       parseToken(lltok::kw_call,
                  "expected 'tail call', 'musttail call', or 'notail call'"))
     return true;
@@ -7988,7 +7988,7 @@ bool LLParser::parseCall(Instruction *&Inst, PerFunctionState &PFS,
       parseOptionalProgramAddrSpace(CallAddrSpace) ||
       parseType(RetType, RetTypeLoc, true /*void allowed*/) ||
       parseValID(CalleeID, &PFS) ||
-      parseParameterList(ArgList, PFS, TCK == CallInst::TCK_MustTail,
+      parseParameterList(ArgList, PFS, TCK == TailCallKind::MustTail,
                          PFS.getFunction().isVarArg()) ||
       parseFnAttributeValuePairs(FnAttrs, FwdRefAttrGrps, false, BuiltinLoc) ||
       parseOptionalOperandBundles(BundleList, PFS))
